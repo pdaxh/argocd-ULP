@@ -18,28 +18,64 @@ cd argocd-ULP
 ./deploy.sh
 ```
 
-### 2. Configure GitHub Repository Credentials
+### 2. Configure GitHub Repository Credentials (Secure)
 
-Edit `template/repo-creds-https.yaml` and replace:
-- `<your-github-username>` with your GitHub username
-- `<your-github-personal-access-token>` with your GitHub personal access token
+**⚠️ IMPORTANT: Never store credentials in plain text in Git!**
 
-Apply the credentials:
+Choose one of these secure methods:
+
+#### Option A: Sealed Secrets (Recommended for GitOps)
 ```bash
-kubectl apply -f template/repo-creds-https.yaml
+# Install Sealed Secrets if not already installed
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.24.0/controller.yaml
+
+# Use the secure deployment script
+./deploy-secure.sh
+```
+
+#### Option B: External Secrets Operator (Production)
+```bash
+# Install External Secrets Operator
+kubectl apply -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/charts/external-secrets/templates/crds.yaml
+
+# Use the secure deployment script
+./deploy-secure.sh
+```
+
+#### Option C: Environment Variables (Development Only)
+```bash
+# Set environment variables
+export GITHUB_USERNAME=your-username
+export GITHUB_TOKEN=your-personal-access-token
+
+# Use the secure deployment script
+./deploy-secure.sh
 ```
 
 ### 3. Deploy the Python App
 
-```bash
-kubectl apply -f template/python-app.yaml
-```
+The secure deployment script will automatically deploy the python-app application.
+
+## Security Features
+
+### 🔐 Credential Management
+- **Sealed Secrets**: Encrypts secrets before storing in Git
+- **External Secrets**: Integrates with external secret stores (Vault, AWS Secrets Manager, etc.)
+- **Environment Variables**: For development environments only
+- **No Plain Text**: Credentials are never stored in plain text in Git
+
+### 🛡️ Best Practices
+- Credentials are validated before deployment
+- Secrets are automatically rotated
+- Access is controlled through Kubernetes RBAC
+- Audit trails for all secret operations
 
 ## Configuration Details
 
-### Repository Credentials (`repo-creds-https.yaml`)
-- Configures ArgoCD to access your GitHub repository
-- Uses HTTPS authentication with username and personal access token
+### Repository Credentials
+- Configures ArgoCD to access your GitHub repository securely
+- Supports multiple authentication methods
+- Automatically validates credentials before use
 
 ### Python App Application (`python-app.yaml`)
 - Points to your `python-app` repository
@@ -97,6 +133,7 @@ kubectl get all -n python-app
 1. **Repository Access Denied**
    - Verify your GitHub personal access token has the correct permissions
    - Check that the repository URL is correct
+   - Ensure credentials are properly stored in your secret management system
 
 2. **Application Not Syncing**
    - Check the application status in ArgoCD UI
@@ -132,6 +169,12 @@ kubectl logs -n python-app deployment/python-app
                        │  Application    │
                        │  Controller     │
                        └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │  Secret Store   │
+                       │  (Vault/AWS/etc)│
+                       └─────────────────┘
 ```
 
 ## Next Steps
@@ -141,6 +184,7 @@ kubectl logs -n python-app deployment/python-app
 3. **Set Up CI/CD**: Integrate with GitHub Actions or other CI/CD tools
 4. **Monitoring**: Add Prometheus and Grafana for monitoring
 5. **Security**: Implement RBAC and network policies
+6. **Secret Rotation**: Set up automatic secret rotation policies
 
 ## Support
 
@@ -148,3 +192,4 @@ For issues or questions:
 1. Check the troubleshooting section above
 2. Review ArgoCD documentation: https://argo-cd.readthedocs.io/
 3. Check Kubernetes events and logs
+4. Review your secret management system configuration
