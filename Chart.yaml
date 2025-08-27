@@ -1,0 +1,10 @@
+apiVersion: v2
+name: argocd-ULP
+description: Wrapper chart for Argo CD with org defaults
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: argo-cd
+    version: 7.3.0            # pick a specific version you want to track
+    repository: https://argoproj.github.io/argo-helm

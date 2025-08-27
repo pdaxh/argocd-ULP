@@ -1,0 +1,26 @@
+# Base values used everywhere; keep conservative and secure by default.
+
+argo-cd:
+  global:
+    domain: ""  # set in env-specific files if using ingress
+  configs:
+    params:
+      # server.insecure=false keeps TLS on the server service (recommended).
+      server.insecure: "false"
+  server:
+    service:
+      type: ClusterIP       # base: internal; expose per-env in overrides
+    ingress:
+      enabled: false        # turn on in env files if you use ingress
+  controller:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  repoServer:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+  applicationSet:
+    enabled: true

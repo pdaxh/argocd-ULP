@@ -1,43 +1,104 @@
-# Backstage ULP - GitOps Setup
+# Argo CD ULP
 
-This repository contains the ArgoCD application definitions for deploying Backstage ULP using GitOps principles.
+This repository wraps the [Argo CD Helm chart](https://artifacthub.io/packages/helm/argo/argo-cd) with our own defaults and environment-specific overrides.
 
-## Architecture
+---
 
-- **Backstage-ULP**: Contains the Backstage application code and Kubernetes manifests
-- **argocd-ULP**: Contains ArgoCD application definitions for GitOps deployment
+## 📦 Prerequisites
 
-## GitOps Workflow
+- A running Kubernetes cluster (v1.24+ recommended).
+- `kubectl` installed and configured to point at the cluster.
+- `helm` v3.8.0 or later installed.
 
-1. **Development**: Make changes to Backstage application in `Backstage-ULP` repository
-2. **Commit & Push**: Changes are committed and pushed to the main branch
-3. **ArgoCD Sync**: ArgoCD automatically detects changes and syncs the application
-4. **Deployment**: Kubernetes resources are updated according to the new manifests
+---
 
-## Prerequisites
+## 🛠️ Prepare Namespace
 
-- ArgoCD running in your cluster
-- Access to the `Backstage-ULP` repository
-- Proper RBAC permissions for ArgoCD
+```bash
+kubectl create namespace argocd
+```
 
-## Deployment
+*(Safe to ignore if it already exists.)*
 
-1. Update the `repoURL` in `backstage-app.yaml` to point to your actual repository
-2. Apply the ArgoCD application:
-   ```bash
-   kubectl apply -f backstage-app.yaml -n argocd
-   ```
+---
 
-## Monitoring
+## 📥 Install Dependencies
 
-- Check application status in ArgoCD UI
-- Monitor Backstage pods in the `backstage` namespace
-- Review sync history and logs in ArgoCD
+From the repo root:
 
-## Benefits of This Setup
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+helm dependency update .
+```
 
-- **GitOps**: All deployments are version controlled and auditable
-- **Automation**: Automatic sync when changes are pushed
-- **Consistency**: Same deployment pattern across all applications
-- **Rollback**: Easy rollback to previous versions via Git
-- **Collaboration**: Team can review deployment changes via PRs
+---
+
+## 🚀 Install / Upgrade Argo CD
+
+Base installation (shared/default values):
+
+```bash
+helm upgrade --install argocd . -n argocd -f values.yaml
+```
+
+Development environment (base + dev overrides):
+
+```bash
+helm upgrade --install argocd . -n argocd -f values.yaml -f values-dev.yaml
+```
+
+Production environment (base + prod overrides):
+
+```bash
+helm upgrade --install argocd . -n argocd -f values.yaml -f values-prod.yaml
+```
+
+---
+
+## 🔑 Access Argo CD
+
+### Port-forward (if using ClusterIP service):
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+Then open: [https://localhost:8080](https://localhost:8080)
+
+### LoadBalancer or Ingress:
+- Use the external IP (LoadBalancer) or DNS host (Ingress) defined in your values file.
+
+---
+
+## 👤 Login
+
+Get the initial admin password:
+```bash
+kubectl get secret argocd-initial-admin-secret -n argocd \
+  -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+- Username: `admin`  
+- Password: (from above command)
+
+---
+
+## 📂 Repo Structure
+
+```
+argocd-ULP/
+├── Chart.yaml          # Declares dependency on official argo-cd chart
+├── values.yaml         # Base configuration
+├── values-dev.yaml     # Dev overrides
+├── values-prod.yaml    # Prod overrides
+├── templates/          # Extra Kubernetes manifests (namespace, projects, repo creds, etc.)
+├── charts/             # Auto-populated dependencies
+└── README.md           # This file
+```
+
+---
+
+## ✅ Next Steps
+
+- Configure Ingress or LoadBalancer for production access.
+- Add `AppProject` and `Application` manifests in `templates/` to bootstrap workloads.
+- Optionally, let Argo CD manage itself using the “App of Apps” pattern.
