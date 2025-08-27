@@ -24,3 +24,11 @@ argo-cd:
         memory: 256Mi
   applicationSet:
     enabled: true
+
+# Python App specific configuration
+python-app:
+  enabled: true
+  namespace: python-app
+  helm:
+    releaseName: python-app
+    chartPath: helm/flask-app-chart

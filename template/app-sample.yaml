@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/PDAxh/python-app       # or git@github.com:...
+    targetRevision: main                                       # branch, tag, or commit
+    path: apps/sample                                          # path within the repo
+    helm:
+      releaseName: sample
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sample
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
