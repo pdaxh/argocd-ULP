@@ -1,28 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: python-app
+  name: backstage
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/pdaxh/python-app
+    repoURL: https://github.com/<you>/backstage-ULP
     targetRevision: main
-    path: helm/flask-app-chart
+    path: helm/backstage
     helm:
-      releaseName: python-app
       valueFiles:
         - values.yaml
+        # choose one overlay:
+        # - values-dev.yaml
+        # - values-prod.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: python-app
+    namespace: backstage
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true

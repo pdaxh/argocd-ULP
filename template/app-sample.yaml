@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/PDAxh/python-app       # or git@github.com:...
+    repoURL: https://github.com/pdaxh/python-app       # or git@github.com:...
     targetRevision: main                                       # branch, tag, or commit
     path: apps/sample                                          # path within the repo
     helm:

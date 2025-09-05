@@ -56,6 +56,25 @@ export GITHUB_TOKEN=your-personal-access-token
 
 The secure deployment script will automatically deploy the python-app application.
 
+### 4. Deploy Backstage Application
+
+After ArgoCD is running, you can deploy the Backstage application:
+
+```bash
+# Apply the Backstage application configuration
+kubectl apply -f ../backstage-ULP/argocd/application-backstage.yaml
+
+# Check the application status
+kubectl get applications -n argocd
+argocd app sync backstage
+
+# Monitor Backstage deployment
+kubectl get pods -n backstage
+kubectl get svc -n backstage
+```
+
+**Note**: Make sure you have the `backstage-ULP` repository cloned and the Backstage application built before deploying.
+
 ## Security Features
 
 ### 🔐 Credential Management
@@ -177,6 +196,46 @@ kubectl logs -n python-app deployment/python-app
                        └─────────────────┘
 ```
 
+## 🚀 **Complete Deployment Workflow**
+
+### **Step 1: Deploy ArgoCD First**
+```bash
+cd argocd-ULP
+helm upgrade --install argocd-ulp . \
+    --namespace argocd \
+    --create-namespace \
+    --wait
+```
+
+### **Step 2: Deploy Backstage via ArgoCD**
+```bash
+cd ../backstage-ULP
+kubectl apply -f argocd/application-backstage.yaml
+```
+
+### **Step 3: Monitor Deployment**
+```bash
+# Check ArgoCD applications
+kubectl get applications -n argocd
+
+# Check Backstage pods
+kubectl get pods -n backstage
+
+# Check Backstage services
+kubectl get svc -n backstage
+```
+
+### **Step 4: Access Applications**
+```bash
+# Access ArgoCD UI
+kubectl port-forward svc/argocd-ulp-argo-cd-server -n argocd 8080:80
+# Open: http://localhost:8080
+
+# Access Backstage
+kubectl port-forward svc/backstage -n backstage 7007:80
+# Open: http://localhost:7007
+```
+
 ## Next Steps
 
 1. **Customize Values**: Modify the Helm chart values in your python-app repository
@@ -185,6 +244,24 @@ kubectl logs -n python-app deployment/python-app
 4. **Monitoring**: Add Prometheus and Grafana for monitoring
 5. **Security**: Implement RBAC and network policies
 6. **Secret Rotation**: Set up automatic secret rotation policies
+
+## 🚀 **Quick Reference - Essential Commands**
+
+```bash
+# 1. Deploy ArgoCD
+helm upgrade --install argocd-ulp ./argocd-ULP --namespace argocd --create-namespace --wait
+
+# 2. Deploy Backstage via ArgoCD
+kubectl apply -f backstage-ULP/argocd/application-backstage.yaml
+
+# 3. Check status
+kubectl get pods -n backstage
+kubectl get applications -n argocd
+
+# 4. Access applications
+kubectl port-forward svc/argocd-ulp-argo-cd-server -n argocd 8080:80  # ArgoCD UI
+kubectl port-forward svc/backstage -n backstage 7007:80                # Backstage
+```
 
 ## Support
 

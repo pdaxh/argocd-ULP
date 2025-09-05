@@ -67,7 +67,7 @@ deploy_with_external_secrets() {
     echo "   with the following keys:"
     echo "   - github/creds.username: $GITHUB_USERNAME"
     echo "   - github/creds.token: $GITHUB_TOKEN"
-    echo "   - github/creds.url: https://github.com/PDAxh/python-app"
+    echo "   - github/creds.url: https://github.com/pdaxh/python-app"
 }
 
 # Function to deploy with Sealed Secrets
@@ -85,7 +85,7 @@ type: Opaque
 stringData:
   username: $GITHUB_USERNAME
   password: $GITHUB_TOKEN
-  url: https://github.com/PDAxh/python-app
+  url: https://github.com/pdaxh/python-app
 EOF
     
     # Seal the secret
