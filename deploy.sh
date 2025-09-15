@@ -20,7 +20,7 @@ helm upgrade --install argocd-ulp . \
 
 # Wait for ArgoCD to be ready
 echo "⏳ Waiting for ArgoCD to be ready..."
-kubectl wait --for=condition=available --timeout=300s deployment/argocd-ulp-argo-cd-server -n argocd
+kubectl wait --for=condition=available --timeout=300s deployment/argocd-ulp-server -n argocd
 
 # Get ArgoCD admin password
 echo "🔑 ArgoCD admin password:"
@@ -29,7 +29,7 @@ echo ""
 
 # Get ArgoCD server URL
 echo "🌐 ArgoCD server URL:"
-kubectl get svc argocd-ulp-argo-cd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+kubectl get svc argocd-ulp-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 echo ":80"
 
 echo "✅ Deployment complete!"
