@@ -20,7 +20,7 @@ cd argocd-ULP
 
 ### 2. Configure GitHub Repository Credentials (Secure)
 
-**⚠️ IMPORTANT: Never store credentials in plain text in Git!**
+**IMPORTANT: Never store credentials in plain text in Git!**
 
 Choose one of these secure methods:
 
@@ -77,13 +77,13 @@ kubectl get svc -n backstage
 
 ## Security Features
 
-### 🔐 Credential Management
+### Credential Management
 - **Sealed Secrets**: Encrypts secrets before storing in Git
 - **External Secrets**: Integrates with external secret stores (Vault, AWS Secrets Manager, etc.)
 - **Environment Variables**: For development environments only
 - **No Plain Text**: Credentials are never stored in plain text in Git
 
-### 🛡️ Best Practices
+### Best Practices
 - Credentials are validated before deployment
 - Secrets are automatically rotated
 - Access is controlled through Kubernetes RBAC
@@ -196,7 +196,7 @@ kubectl logs -n python-app deployment/python-app
                        └─────────────────┘
 ```
 
-## 🚀 **Complete Deployment Workflow**
+## **Complete Deployment Workflow**
 
 ### **Step 1: Deploy ArgoCD First**
 ```bash
@@ -245,7 +245,7 @@ kubectl port-forward svc/backstage -n backstage 7007:80
 5. **Security**: Implement RBAC and network policies
 6. **Secret Rotation**: Set up automatic secret rotation policies
 
-## 🚀 **Quick Reference - Essential Commands**
+## **Quick Reference - Essential Commands**
 
 ```bash
 # 1. Deploy ArgoCD
